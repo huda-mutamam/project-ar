@@ -3,128 +3,99 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-  <title>project_kapal_kajang</title>
-  <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/aframe-extras@7.x/dist/aframe-extras.min.js"></script>
-  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+  <title>AR Kapal Kajang Musi</title>
+  <!-- Versi A-Frame dan AR.js yang stabil dan kompatibel -->
+  <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/aframe-extras@7.0.0/dist/aframe-extras.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.5/aframe/build/aframe-ar.js"></script>
   <style>
-    #loading-screen {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.85);
+    .arjs-loader {
+      height: 100%;
+      width: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      background-color: rgba(0, 0, 0, 0.8);
+      z-index: 9999;
       display: flex;
-      flex-direction: column;
       justify-content: center;
       align-items: center;
-      z-index: 9999;
+    }
+    .arjs-loader div {
+      text-align: center;
+      font-size: 1.3em;
       color: white;
       font-family: Arial, sans-serif;
     }
-    #loading-screen .spinner {
-      width: 50px; height: 50px;
-      border: 4px solid rgba(255,255,255,0.3);
-      border-top: 4px solid #FFD700;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin-bottom: 20px;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    #loading-screen p { font-size: 16px; text-align: center; }
-    #status-text { font-size: 12px; color: #aaa; margin-top: 10px; }
   </style>
 </head>
 <body style="margin: 0; overflow: hidden;">
 
-  <!-- Loading Screen -->
-  <div id="loading-screen">
-    <div class="spinner"></div>
-    <p>Memuat Model 3D Kapal Kajang...</p>
-    <p id="status-text">Mohon tunggu, file cukup besar</p>
+  <div class="arjs-loader">
+    <div>Memuat, tunggu sebentar...</div>
   </div>
 
-  <a-scene embedded
-    arjs="sourceType: webcam; debugUIEnabled: false; patternRatio: 0.75;"
+  <a-scene
     vr-mode-ui="enabled: false"
-    renderer="logarithmicDepthBuffer: true; antialias: true;"
-    loading-screen="enabled: false">
+    loading-screen="enabled: false"
+    arjs="sourceType: webcam; debugUIEnabled: false;"
+    renderer="logarithmicDepthBuffer: true;">
 
-    <a-marker preset="hiro" id="marker-utama" smooth="true" smoothCount="10" smoothTolerance="0.01" smoothThreshold="5">
+    <a-marker preset="hiro" id="marker-utama" smooth="true" smoothCount="5" smoothTolerance="0.01" smoothThreshold="2">
+
+      <!-- Model 3D Kapal -->
       <a-entity
         id="model-kapal"
         gltf-model="./project_kapal_kajangfix.glb"
-        scale="0.2 0.2 0.2"
-        position="0 0.05 0"
-        rotation="-70 0 0"
-        animation-mixer="clip: *; loop: repeat">
+        scale="0.15 0.15 0.15"
+        position="0 0 0"
+        rotation="-75 0 0"
+        animation-mixer>
       </a-entity>
 
-      <!-- Teks Judul -->
-      <a-text
-        value="Kapal Kajang Musi"
-        align="center"
-        position="0 0.55 0.1"
-        scale="0.5 0.5 0.5"
-        color="#FFD700"
-        side="double"
-        font="roboto">
-      </a-text>
+      <!-- Judul -->
+      <a-entity
+        position="0 0.6 0"
+        text="value: Kapal Kajang Musi; align: center; width: 2; color: #FFD700;"
+        look-at="[camera]">
+      </a-entity>
 
-      <!-- Teks Keterangan -->
-      <a-text
-        value="Kapal tradisional Sungai Musi\nyang digunakan untuk\ntransportasi dan perdagangan\ndi era Kesultanan Palembang"
-        align="center"
-        position="0 0.35 0.1"
-        scale="0.25 0.25 0.25"
-        color="#FFFFFF"
-        side="double"
-        font="roboto"
-        baseline="top">
-      </a-text>
+      <!-- Keterangan -->
+      <a-entity
+        position="0 0.4 0"
+        text="value: Kapal tradisional Sungai Musi; align: center; width: 1.5; color: #FFFFFF;"
+        look-at="[camera]">
+      </a-entity>
+
     </a-marker>
 
     <a-entity camera></a-entity>
   </a-scene>
 
-  <!-- Audio terpisah dari a-assets agar tidak blocking -->
   <audio id="musik-bg" src="./sriwijaya.mpeg" preload="none"></audio>
 
   <script>
-    const marker = document.querySelector('#marker-utama');
-    const model = document.querySelector('#model-kapal');
-    const musik = document.getElementById('musik-bg');
-    const loadingScreen = document.getElementById('loading-screen');
-    const statusText = document.getElementById('status-text');
-
-    // Tunggu model selesai di-load
-    model.addEventListener('model-loaded', () => {
-      console.log('Model berhasil dimuat!');
-      statusText.textContent = 'Model siap! Arahkan kamera ke marker Hiro.';
-      setTimeout(() => {
-        loadingScreen.style.display = 'none';
-      }, 1500);
+    // Sembunyikan loading saat scene siap
+    const scene = document.querySelector('a-scene');
+    scene.addEventListener('loaded', function() {
+      document.querySelector('.arjs-loader').style.display = 'none';
     });
 
-    // Error handling jika model gagal load
-    model.addEventListener('model-error', (e) => {
-      console.error('Gagal memuat model:', e);
-      statusText.textContent = 'Gagal memuat model. Coba refresh halaman.';
+    // Fallback sembunyikan loading setelah 10 detik
+    setTimeout(function() {
+      var loader = document.querySelector('.arjs-loader');
+      if (loader) loader.style.display = 'none';
+    }, 10000);
+
+    // Musik
+    var marker = document.querySelector('#marker-utama');
+    var musik = document.getElementById('musik-bg');
+
+    marker.addEventListener('markerFound', function() {
+      musik.play().catch(function() {});
     });
 
-    // Fallback: sembunyikan loading setelah 15 detik
-    setTimeout(() => {
-      if (loadingScreen.style.display !== 'none') {
-        statusText.textContent = 'Arahkan kamera ke marker Hiro';
-        loadingScreen.style.display = 'none';
-      }
-    }, 15000);
-
-    // Musik saat marker ditemukan
-    marker.addEventListener('markerFound', () => {
-      musik.play().catch(() => {});
-    });
-
-    marker.addEventListener('markerLost', () => {
+    marker.addEventListener('markerLost', function() {
       musik.pause();
     });
   </script>
