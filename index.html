@@ -3,99 +3,39 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-  <title>AR Kapal Kajang Musi</title>
-  <!-- Versi A-Frame dan AR.js yang stabil dan kompatibel -->
+  <title>project_kapal_kajang</title>
   <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/aframe-extras@7.0.0/dist/aframe-extras.min.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.5/aframe/build/aframe-ar.js"></script>
-  <style>
-    .arjs-loader {
-      height: 100%;
-      width: 100%;
-      position: absolute;
-      top: 0;
-      left: 0;
-      background-color: rgba(0, 0, 0, 0.8);
-      z-index: 9999;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    .arjs-loader div {
-      text-align: center;
-      font-size: 1.3em;
-      color: white;
-      font-family: Arial, sans-serif;
-    }
-  </style>
 </head>
 <body style="margin: 0; overflow: hidden;">
 
-  <div class="arjs-loader">
-    <div>Memuat, tunggu sebentar...</div>
-  </div>
+  <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;" vr-mode-ui="enabled: false">
+    <a-assets>
+      <audio id="musik-bg" src="sriwijaya.mpeg" preload="auto"></audio>
+    </a-assets>
 
-  <a-scene
-    vr-mode-ui="enabled: false"
-    loading-screen="enabled: false"
-    arjs="sourceType: webcam; debugUIEnabled: false;"
-    renderer="logarithmicDepthBuffer: true;">
-
-    <a-marker preset="hiro" id="marker-utama" smooth="true" smoothCount="5" smoothTolerance="0.01" smoothThreshold="2">
-
-      <!-- Model 3D Kapal -->
+    <a-marker preset="hiro" id="marker-utama">
       <a-entity
-        id="model-kapal"
-        gltf-model="./project_kapal_kajangfix.glb"
-        scale="0.15 0.15 0.15"
+        gltf-model="project_kapal_kajangfix.glb"
+        scale="0.3 0.3 0.3"
         position="0 0 0"
-        rotation="-75 0 0"
-        animation-mixer>
+        animation-mixer="clip: *; loop: repeat">
       </a-entity>
-
-      <!-- Judul -->
-      <a-entity
-        position="0 0.6 0"
-        text="value: Kapal Kajang Musi; align: center; width: 2; color: #FFD700;"
-        look-at="[camera]">
-      </a-entity>
-
-      <!-- Keterangan -->
-      <a-entity
-        position="0 0.4 0"
-        text="value: Kapal tradisional Sungai Musi; align: center; width: 1.5; color: #FFFFFF;"
-        look-at="[camera]">
-      </a-entity>
-
     </a-marker>
 
     <a-entity camera></a-entity>
   </a-scene>
 
-  <audio id="musik-bg" src="./sriwijaya.mpeg" preload="none"></audio>
-
   <script>
-    // Sembunyikan loading saat scene siap
-    const scene = document.querySelector('a-scene');
-    scene.addEventListener('loaded', function() {
-      document.querySelector('.arjs-loader').style.display = 'none';
+    const marker = document.querySelector('#marker-utama');
+    const musik = document.querySelector('#musik-bg');
+
+    marker.addEventListener('markerFound', () => {
+      musik.play().catch(() => {}); // catch biar gak error kalau browser blokir autoplay
     });
 
-    // Fallback sembunyikan loading setelah 10 detik
-    setTimeout(function() {
-      var loader = document.querySelector('.arjs-loader');
-      if (loader) loader.style.display = 'none';
-    }, 10000);
-
-    // Musik
-    var marker = document.querySelector('#marker-utama');
-    var musik = document.getElementById('musik-bg');
-
-    marker.addEventListener('markerFound', function() {
-      musik.play().catch(function() {});
-    });
-
-    marker.addEventListener('markerLost', function() {
+    marker.addEventListener('markerLost', () => {
       musik.pause();
     });
   </script>
