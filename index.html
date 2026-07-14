@@ -44,12 +44,12 @@
       <audio id="musik-bg" src="sriwijaya.mpeg" preload="auto"></audio>
     </a-assets>
 
-    <a-marker preset="hiro" id="marker-utama" smooth="true" smoothCount="15" smoothTolerance="0.01" smoothThreshold="5">
+    <a-marker preset="hiro" id="marker-utama" smooth="true" smoothCount="25" smoothTolerance="0.005" smoothThreshold="8">
       <!-- Parent entity untuk rotasi sudut pandang -->
       <a-entity rotation="-75 0 0">
         <a-entity
           gltf-model="project_kapal_kajangfix.glb"
-          scale="0.3 0.3 0.3"
+          scale="0.15 0.15 0.15"
           position="0 0 0"
           animation-mixer="clip: *; loop: repeat">
         </a-entity>
