@@ -18,7 +18,7 @@
       <audio id="musik-bg" src="sriwijaya.mpeg" preload="auto"></audio>
     </a-assets>
 
-    <a-marker preset="hiro" id="marker-utama">
+    <a-marker preset="hiro" id="marker-utama" smooth="true" smoothCount="15" smoothTolerance="0.01" smoothThreshold="5">
       <!-- Parent entity untuk rotasi sudut pandang -->
       <a-entity rotation="-75 0 0">
         <a-entity
